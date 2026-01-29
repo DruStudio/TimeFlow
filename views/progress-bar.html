@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Progress Bar - Watch the year fill up in a clean, elegant bar.">
+  <title>Progress Bar - Time Flow</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .progress-container {
+      width: 100%;
+      max-width: 700px;
+      height: 60px;
+      background: var(--bg-secondary);
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 8px var(--shadow-sm);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient-accent);
+      border-radius: 30px;
+      transition: width 2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      z-index: 10;
+      text-shadow: 0 2px 4px var(--shadow-sm);
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">Time Flow</a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+          <div class="theme-toggle">
+            <button class="theme-toggle-btn" aria-label="Toggle theme">
+              <span class="theme-icon"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container-sm">
+      <div class="viz-header">
+        <h1 class="viz-page-title">Progress Bar</h1>
+        <p class="viz-page-description">Pure and minimal. A simple bar filling as the year progresses.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <div class="progress-container">
+            <div class="progress-fill" id="progress-fill"></div>
+            <div class="progress-text" id="progress-percent">0%</div>
+          </div>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item">
+            <span class="info-value" id="info-percent">0</span>
+            <span class="info-label">% Complete</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-days-used">0</span>
+            <span class="info-label">Days Used</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-days-left">0</span>
+            <span class="info-label">Days Remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="radial-ring.html" class="nav-link">Radial Ring</a>
+          <a href="year-in-weeks.html" class="nav-link">Year in Weeks</a>
+          <a href="calendar-fill.html" class="nav-link">Calendar Fill</a>
+          <a href="hourglass.html" class="nav-link">Hourglass</a>
+          <a href="candle.html" class="nav-link">Candle</a>
+          <a href="mountain-climb.html" class="nav-link">Mountain Climb</a>
+          <a href="battery.html" class="nav-link">Battery</a>
+          <a href="timeline.html" class="nav-link">Timeline</a>
+          <a href="life-bar.html" class="nav-link">Life Bar</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="fullscreen" class="fullscreen">
+    <button class="btn btn-icon fullscreen-close" aria-label="Close fullscreen">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="viz-display">
+      <div class="progress-container" style="max-width: 900px; height: 80px;">
+        <div class="progress-fill" id="progress-fill-fs"></div>
+        <div class="progress-text" id="progress-percent-fs" style="font-size: 2rem;">0%</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const progressFill = document.getElementById('progress-fill');
+      const progressFillFs = document.getElementById('progress-fill-fs');
+      const progressPercent = document.getElementById('progress-percent');
+      const progressPercentFs = document.getElementById('progress-percent-fs');
+
+      // Set width
+      setTimeout(() => {
+        progressFill.style.width = timeFlow.percentComplete + '%';
+        progressFillFs.style.width = timeFlow.percentComplete + '%';
+      }, 100);
+
+      // Animate percentage text
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+
+      // Animate progress text
+      let start = 0;
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function updateProgressText(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = start + (timeFlow.percentComplete - start) * progress;
+        
+        progressPercent.textContent = current.toFixed(1) + '%';
+        progressPercentFs.textContent = current.toFixed(1) + '%';
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateProgressText);
+        }
+      }
+
+      requestAnimationFrame(updateProgressText);
+    });
+  </script>
+</body>
+</html>

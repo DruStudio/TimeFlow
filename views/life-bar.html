@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Life Bar - A game-style health bar showing your year's progress.">
+  <title>Life Bar - Time Flow</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .lifebar-container {
+      width: 100%;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .lifebar-frame {
+      background: var(--bg-secondary);
+      border: 4px solid var(--accent-primary);
+      border-radius: 16px;
+      padding: 12px;
+      position: relative;
+      box-shadow: 0 8px 30px var(--shadow-md);
+    }
+
+    .lifebar-inner {
+      background: var(--bg-card);
+      border-radius: 8px;
+      height: 60px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 2px 8px var(--shadow-sm);
+    }
+
+    .lifebar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%);
+      transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lifebar-fill.warning {
+      background: linear-gradient(90deg, #f39c12 0%, #e67e22 100%);
+    }
+
+    .lifebar-fill.critical {
+      background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+      animation: criticalPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes criticalPulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    .lifebar-fill::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+    }
+
+    .lifebar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+      0% {
+        left: -100%;
+      }
+      100% {
+        left: 100%;
+      }
+    }
+
+    .lifebar-segments {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      pointer-events: none;
+    }
+
+    .segment {
+      flex: 1;
+      border-right: 2px solid var(--bg-card);
+    }
+
+    .segment:last-child {
+      border-right: none;
+    }
+
+    .lifebar-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Courier New', monospace;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+                   -1px -1px 0 rgba(0, 0, 0, 0.3);
+      z-index: 10;
+      letter-spacing: 0.1em;
+    }
+
+    .lifebar-label {
+      position: absolute;
+      top: 50%;
+      left: 20px;
+      transform: translateY(-50%);
+      font-family: 'Courier New', monospace;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--text-primary);
+      z-index: 5;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+
+    .hp-badge {
+      display: inline-block;
+      background: var(--accent-primary);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      margin-left: 0.5rem;
+      box-shadow: 0 2px 8px var(--shadow-md);
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .stat-box {
+      background: var(--bg-secondary);
+      padding: 1rem;
+      border-radius: 12px;
+      text-align: center;
+      border: 2px solid var(--border-color);
+    }
+
+    @media (max-width: 768px) {
+      .lifebar-text {
+        font-size: 1.5rem;
+      }
+      .lifebar-label {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">Time Flow</a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+          <div class="theme-toggle">
+            <button class="theme-toggle-btn" aria-label="Toggle theme">
+              <span class="theme-icon"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container-sm">
+      <div class="viz-header">
+        <h1 class="viz-page-title">Life Bar</h1>
+        <p class="viz-page-description">A game-style health bar. Your year's HP draining in real-time.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <div class="lifebar-container">
+            <div class="lifebar-frame">
+              <div class="lifebar-inner">
+                <div class="lifebar-fill" id="lifebar-fill">
+                  <div class="lifebar-segments">
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                  </div>
+                </div>
+                <div class="lifebar-label">
+                  YEAR <span class="hp-badge" id="year-badge">2026</span>
+                </div>
+                <div class="lifebar-text" id="lifebar-text">0 / 0</div>
+              </div>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat-box">
+                <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 0.5rem;">REMAINING HP</div>
+                <div style="font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--accent-primary);" id="remaining-hp">0</div>
+              </div>
+              <div class="stat-box">
+                <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 0.5rem;">DAYS SURVIVED</div>
+                <div style="font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--accent-primary);" id="days-survived">0</div>
+              </div>
+              <div class="stat-box">
+                <div style="font-size: 0.8rem; color: var(--text-tertiary); margin-bottom: 0.5rem;">COMPLETION %</div>
+                <div style="font-family: 'Courier New', monospace; font-size: 1.8rem; color: var(--accent-primary);" id="completion-percent">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="progress-bar.html" class="nav-link">Progress Bar</a>
+          <a href="radial-ring.html" class="nav-link">Radial Ring</a>
+          <a href="year-in-weeks.html" class="nav-link">Year in Weeks</a>
+          <a href="calendar-fill.html" class="nav-link">Calendar Fill</a>
+          <a href="hourglass.html" class="nav-link">Hourglass</a>
+          <a href="candle.html" class="nav-link">Candle</a>
+          <a href="mountain-climb.html" class="nav-link">Mountain Climb</a>
+          <a href="battery.html" class="nav-link">Battery</a>
+          <a href="timeline.html" class="nav-link">Timeline</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="fullscreen" class="fullscreen">
+    <button class="btn btn-icon fullscreen-close" aria-label="Close fullscreen">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="lifebar-container" style="max-width: 900px;">
+      <div class="lifebar-frame" style="padding: 20px;">
+        <div class="lifebar-inner" style="height: 90px;">
+          <div class="lifebar-fill" id="lifebar-fill-fs">
+            <div class="lifebar-segments">
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+              <div class="segment"></div>
+            </div>
+          </div>
+          <div class="lifebar-label" style="font-size: 1.5rem; left: 30px;">
+            YEAR <span class="hp-badge" id="year-badge-fs" style="font-size: 1.2rem; padding: 0.5rem 1rem;">2026</span>
+          </div>
+          <div class="lifebar-text" id="lifebar-text-fs" style="font-size: 2.5rem;">0 / 0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const lifebarFill = document.getElementById('lifebar-fill');
+      const lifebarFillFs = document.getElementById('lifebar-fill-fs');
+      const lifebarText = document.getElementById('lifebar-text');
+      const lifebarTextFs = document.getElementById('lifebar-text-fs');
+      const yearBadge = document.getElementById('year-badge');
+      const yearBadgeFs = document.getElementById('year-badge-fs');
+
+      const percentRemaining = 100 - timeFlow.percentComplete;
+      const daysRemaining = timeFlow.daysRemaining;
+      const totalDays = timeFlow.totalDays;
+
+      // Set year badges
+      yearBadge.textContent = timeFlow.year;
+      yearBadgeFs.textContent = timeFlow.year;
+
+      // Determine color based on remaining HP
+      if (percentRemaining < 20) {
+        lifebarFill.classList.add('critical');
+        lifebarFillFs.classList.add('critical');
+      } else if (percentRemaining < 50) {
+        lifebarFill.classList.add('warning');
+        lifebarFillFs.classList.add('warning');
+      }
+
+      // Animate lifebar fill
+      setTimeout(() => {
+        lifebarFill.style.width = percentRemaining + '%';
+        lifebarFillFs.style.width = percentRemaining + '%';
+      }, 100);
+
+      // Animate HP text
+      let currentDays = 0;
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function updateLifebarText(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        currentDays = Math.round(progress * daysRemaining);
+        
+        lifebarText.textContent = `${currentDays} / ${totalDays}`;
+        lifebarTextFs.textContent = `${currentDays} / ${totalDays}`;
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateLifebarText);
+        }
+      }
+
+      requestAnimationFrame(updateLifebarText);
+
+      // Animate stat boxes
+      animateNumber(document.getElementById('remaining-hp'), 0, daysRemaining, 1500);
+      animateNumber(document.getElementById('days-survived'), 0, timeFlow.dayOfYear, 1500);
+      
+      const completionEl = document.getElementById('completion-percent');
+      let startPercent = 0;
+      const targetPercent = timeFlow.percentComplete;
+      const percentDuration = 1500;
+      const percentStartTime = performance.now();
+
+      function updatePercent(currentTime) {
+        const elapsed = currentTime - percentStartTime;
+        const progress = Math.min(elapsed / percentDuration, 1);
+        const current = startPercent + (targetPercent - startPercent) * progress;
+        
+        completionEl.textContent = current.toFixed(1) + '%';
+        
+        if (progress < 1) {
+          requestAnimationFrame(updatePercent);
+        }
+      }
+
+      requestAnimationFrame(updatePercent);
+    });
+  </script>
+</body>
+</html>

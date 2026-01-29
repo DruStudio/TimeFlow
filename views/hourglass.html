@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Hourglass - Time drains from the top to the bottom.">
+  <title>Hourglass - Time Flow</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .hourglass-container {
+      width: 280px;
+      height: 400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hourglass-svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .hourglass-frame {
+      fill: none;
+      stroke: var(--accent-primary);
+      stroke-width: 4;
+      stroke-linejoin: round;
+    }
+
+    .sand-top {
+      fill: var(--accent-primary);
+      opacity: 0.7;
+      transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sand-bottom {
+      fill: var(--accent-primary);
+      opacity: 0.7;
+      transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sand-stream {
+      fill: var(--accent-secondary);
+      opacity: 0.8;
+    }
+
+    .hourglass-label {
+      text-align: center;
+      margin-top: var(--space-sm);
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .hourglass-container {
+        width: 240px;
+        height: 360px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">Time Flow</a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+          <div class="theme-toggle">
+            <button class="theme-toggle-btn" aria-label="Toggle theme">
+              <span class="theme-icon"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container-sm">
+      <div class="viz-header">
+        <h1 class="viz-page-title">Hourglass</h1>
+        <p class="viz-page-description">Time drains from the top to the bottom. A classic metaphor.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <div class="hourglass-container">
+            <svg class="hourglass-svg" viewBox="0 0 200 300" id="hourglass">
+              <!-- Hourglass frame -->
+              <path class="hourglass-frame" d="M 40 20 L 160 20 L 100 150 L 160 280 L 40 280 L 100 150 Z"/>
+              
+              <!-- Sand in top -->
+              <clipPath id="topClip">
+                <path d="M 40 20 L 160 20 L 100 150 Z"/>
+              </clipPath>
+              <rect class="sand-top" x="40" y="20" width="120" height="130" clip-path="url(#topClip)" id="sand-top"/>
+              
+              <!-- Sand stream -->
+              <rect class="sand-stream" x="98" y="145" width="4" height="10" rx="2">
+                <animate attributeName="y" values="145;220;145" dur="2s" repeatCount="indefinite"/>
+                <animate attributeName="height" values="10;5;10" dur="2s" repeatCount="indefinite"/>
+              </rect>
+              
+              <!-- Sand in bottom -->
+              <clipPath id="bottomClip">
+                <path d="M 40 280 L 160 280 L 100 150 Z"/>
+              </clipPath>
+              <rect class="sand-bottom" x="40" y="280" width="120" height="0" clip-path="url(#bottomClip)" id="sand-bottom"/>
+            </svg>
+            <div class="hourglass-label">Time flowing down</div>
+          </div>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item">
+            <span class="info-value" id="info-time-left">0</span>
+            <span class="info-label">% Remaining</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-time-used">0</span>
+            <span class="info-label">% Used</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-days-left">0</span>
+            <span class="info-label">Days Left</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="progress-bar.html" class="nav-link">Progress Bar</a>
+          <a href="radial-ring.html" class="nav-link">Radial Ring</a>
+          <a href="year-in-weeks.html" class="nav-link">Year in Weeks</a>
+          <a href="calendar-fill.html" class="nav-link">Calendar Fill</a>
+          <a href="candle.html" class="nav-link">Candle</a>
+          <a href="mountain-climb.html" class="nav-link">Mountain Climb</a>
+          <a href="battery.html" class="nav-link">Battery</a>
+          <a href="timeline.html" class="nav-link">Timeline</a>
+          <a href="life-bar.html" class="nav-link">Life Bar</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="fullscreen" class="fullscreen">
+    <button class="btn btn-icon fullscreen-close" aria-label="Close fullscreen">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="hourglass-container" style="width: 360px; height: 500px;">
+      <svg class="hourglass-svg" viewBox="0 0 200 300">
+        <path class="hourglass-frame" d="M 40 20 L 160 20 L 100 150 L 160 280 L 40 280 L 100 150 Z"/>
+        <clipPath id="topClipFs">
+          <path d="M 40 20 L 160 20 L 100 150 Z"/>
+        </clipPath>
+        <rect class="sand-top" x="40" y="20" width="120" height="130" clip-path="url(#topClipFs)" id="sand-top-fs"/>
+        <rect class="sand-stream" x="98" y="145" width="4" height="10" rx="2">
+          <animate attributeName="y" values="145;220;145" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="height" values="10;5;10" dur="2s" repeatCount="indefinite"/>
+        </rect>
+        <clipPath id="bottomClipFs">
+          <path d="M 40 280 L 160 280 L 100 150 Z"/>
+        </clipPath>
+        <rect class="sand-bottom" x="40" y="280" width="120" height="0" clip-path="url(#bottomClipFs)" id="sand-bottom-fs"/>
+      </svg>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const sandTop = document.getElementById('sand-top');
+      const sandBottom = document.getElementById('sand-bottom');
+      const sandTopFs = document.getElementById('sand-top-fs');
+      const sandBottomFs = document.getElementById('sand-bottom-fs');
+
+      const percentRemaining = 100 - timeFlow.percentComplete;
+      const percentUsed = timeFlow.percentComplete;
+      
+      // Top sand height (130 is max height)
+      const topHeight = (percentRemaining / 100) * 130;
+      const bottomHeight = (percentUsed / 100) * 130;
+      
+      // Animate sand levels
+      setTimeout(() => {
+        sandTop.setAttribute('height', topHeight);
+        sandTop.setAttribute('y', 20 + (130 - topHeight));
+        sandTopFs.setAttribute('height', topHeight);
+        sandTopFs.setAttribute('y', 20 + (130 - topHeight));
+        
+        sandBottom.setAttribute('height', bottomHeight);
+        sandBottom.setAttribute('y', 280 - bottomHeight);
+        sandBottomFs.setAttribute('height', bottomHeight);
+        sandBottomFs.setAttribute('y', 280 - bottomHeight);
+      }, 100);
+
+      // Animate numbers
+      animateNumber(document.getElementById('info-time-left'), 0, percentRemaining, 1500);
+      animateNumber(document.getElementById('info-time-used'), 0, percentUsed, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>

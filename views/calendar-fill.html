@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calendar Fill - Every day of the year laid out.">
+  <title>Calendar Fill - Time Flow</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .calendar-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .months-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: var(--space-md);
+    }
+
+    .month-block {
+      background: var(--bg-secondary);
+      padding: var(--space-sm);
+      border-radius: 12px;
+    }
+
+    .month-name {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      text-align: center;
+    }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .day-dot {
+      aspect-ratio: 1;
+      background: var(--border-color);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .day-dot.filled {
+      background: var(--accent-primary);
+      transform: scale(1);
+    }
+
+    .day-dot.today {
+      background: var(--gradient-accent);
+      box-shadow: 0 0 10px var(--accent-primary);
+      animation: todayPulse 2s ease-in-out infinite;
+    }
+
+    .day-dot:hover {
+      transform: scale(1.2);
+    }
+
+    @keyframes todayPulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .months-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .months-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">Time Flow</a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+            </svg>
+          </button>
+          <div class="theme-toggle">
+            <button class="theme-toggle-btn" aria-label="Toggle theme">
+              <span class="theme-icon"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container">
+      <div class="viz-header">
+        <h1 class="viz-page-title">Calendar Fill</h1>
+        <p class="viz-page-description">Every day of the year laid out. Days fill in as time passes.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <div class="calendar-container">
+            <div class="months-grid" id="months-grid"></div>
+          </div>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item">
+            <span class="info-value" id="info-percent">0</span>
+            <span class="info-label">% Complete</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-days-used">0</span>
+            <span class="info-label">Days Used</span>
+          </div>
+          <div class="info-item">
+            <span class="info-value" id="info-days-left">0</span>
+            <span class="info-label">Days Remaining</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="progress-bar.html" class="nav-link">Progress Bar</a>
+          <a href="radial-ring.html" class="nav-link">Radial Ring</a>
+          <a href="year-in-weeks.html" class="nav-link">Year in Weeks</a>
+          <a href="hourglass.html" class="nav-link">Hourglass</a>
+          <a href="candle.html" class="nav-link">Candle</a>
+          <a href="mountain-climb.html" class="nav-link">Mountain Climb</a>
+          <a href="battery.html" class="nav-link">Battery</a>
+          <a href="timeline.html" class="nav-link">Timeline</a>
+          <a href="life-bar.html" class="nav-link">Life Bar</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="fullscreen" class="fullscreen">
+    <button class="btn btn-icon fullscreen-close" aria-label="Close fullscreen">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div class="calendar-container">
+      <div class="months-grid" id="months-grid-fs"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const monthsGrid = document.getElementById('months-grid');
+      const monthsGridFs = document.getElementById('months-grid-fs');
+      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const daysInMonth = [31, timeFlow.isLeapYear(timeFlow.year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      
+      let dayCounter = 0;
+
+      function createCalendar(container) {
+        container.innerHTML = '';
+        dayCounter = 0;
+
+        for (let month = 0; month < 12; month++) {
+          const monthBlock = document.createElement('div');
+          monthBlock.className = 'month-block';
+          
+          const monthName = document.createElement('div');
+          monthName.className = 'month-name';
+          monthName.textContent = monthNames[month];
+          monthBlock.appendChild(monthName);
+          
+          const daysGrid = document.createElement('div');
+          daysGrid.className = 'days-grid';
+          
+          for (let day = 1; day <= daysInMonth[month]; day++) {
+            dayCounter++;
+            const dayDot = document.createElement('div');
+            dayDot.className = 'day-dot';
+            
+            if (dayCounter < timeFlow.dayOfYear) {
+              dayDot.classList.add('filled');
+            } else if (dayCounter === timeFlow.dayOfYear) {
+              dayDot.classList.add('today');
+            }
+            
+            dayDot.title = `${monthNames[month]} ${day}`;
+            
+            // Stagger animation
+            dayDot.style.opacity = '0';
+            dayDot.style.transform = 'scale(0.5)';
+            setTimeout(() => {
+              dayDot.style.opacity = '1';
+              dayDot.style.transform = 'scale(1)';
+            }, dayCounter * 5);
+            
+            daysGrid.appendChild(dayDot);
+          }
+          
+          monthBlock.appendChild(daysGrid);
+          container.appendChild(monthBlock);
+        }
+      }
+
+      createCalendar(monthsGrid);
+      createCalendar(monthsGridFs);
+
+      // Animate numbers
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>
