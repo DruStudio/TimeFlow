@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🟦 365 Day Grid - Time Flow</title>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .day-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(11px,1fr));gap:3px;max-width:900px;margin:0 auto;}
+    .day-box {aspect-ratio:1;background:var(--bg-secondary);border-radius:2px;transition:all 0.3s ease;cursor:pointer;}
+    .day-box.filled {background:linear-gradient(135deg,#ff8c42,#ffa642);box-shadow:0 0 8px rgba(255,140,66,0.5);}
+    .day-box.today {background:linear-gradient(135deg,#d4af37,#ffd700);box-shadow:0 0 15px rgba(212,175,55,0.8);animation:pulse 2s infinite;}
+    .day-box:hover {transform:scale(1.4);z-index:10;}
+    @keyframes pulse {0%,100%{opacity:1;}50%{opacity:0.7;}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container"><div class="nav-content">
+      <a href="../index.html" class="nav-logo"><img src="../assets/logo.png" alt="Time Flow" class="nav-logo-img"></a>
+      <div class="nav-controls">
+        <button class="btn btn-icon share-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+        <button class="btn btn-icon fullscreen-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+        <div class="theme-toggle"><button class="theme-toggle-btn"><span class="theme-icon"></span></button></div>
+      </div>
+    </div></div>
+  </nav>
+  <main class="viz-page">
+    <div class="container">
+      <div class="viz-header">
+        <h1 class="viz-page-title">🟦 365 Day Grid</h1>
+        <p class="viz-page-description">Every single day of 2026. Past days glow orange, today shines gold.</p>
+      </div>
+      <div class="viz-container">
+        <div class="viz-display"><div class="day-grid" id="day-grid"></div></div>
+        <div class="viz-info">
+          <div class="info-item"><span class="info-value" id="info-percent">0</span><span class="info-label">% Complete</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-used">0</span><span class="info-label">Days Passed</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-left">0</span><span class="info-label">Days Ahead</span></div>
+        </div>
+      </div>
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="year-progress.html" class="nav-link">📊 Progress</a>
+          <a href="year-pie.html" class="nav-link">🥧 Pie</a>
+          <a href="clock-dial.html" class="nav-link">🕰️ Clock</a>
+          <a href="month-blocks.html" class="nav-link">🧱 Months</a>
+          <a href="thermometer.html" class="nav-link">🌡️ Temp</a>
+          <a href="ladder.html" class="nav-link">🪜 Ladder</a>
+          <a href="hourglass.html" class="nav-link">⏳ Hourglass</a>
+          <a href="calendar-fill.html" class="nav-link">🗓️ Calendar</a>
+          <a href="orbit.html" class="nav-link">🌍 Orbit</a>
+          <a href="compass-ring.html" class="nav-link">🧭 Ring</a>
+          <a href="stacked-blocks.html" class="nav-link">📦 Blocks</a>
+        </div>
+      </div>
+    </div>
+  </main>
+  <div id="fullscreen" class="fullscreen">
+    <button class="btn btn-icon fullscreen-close"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    <div class="day-grid" id="day-grid-fs" style="max-width:1200px;"></div>
+  </div>
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      function createGrid(container) {
+        container.innerHTML = '';
+        for (let i = 1; i <= timeFlow.totalDays; i++) {
+          const box = document.createElement('div');
+          box.className = 'day-box';
+          if (i < timeFlow.dayOfYear) box.classList.add('filled');
+          else if (i === timeFlow.dayOfYear) box.classList.add('today');
+          box.title = `Day ${i}`;
+          box.style.opacity = '0';
+          box.style.transform = 'scale(0.5)';
+          setTimeout(() => {
+            box.style.transition = 'all 0.3s ease';
+            box.style.opacity = '1';
+            box.style.transform = 'scale(1)';
+          }, i * 2);
+          container.appendChild(box);
+        }
+      }
+      createGrid(document.getElementById('day-grid'));
+      createGrid(document.getElementById('day-grid-fs'));
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>
