@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🗓️ Calendar Fill - Time Flow</title>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <style>
+    .calendar-container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .months-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+    }
+    .month-cal {
+      background: var(--bg-card);
+      border-radius: 8px;
+      padding: 1rem;
+      border: 1px solid var(--border-color);
+    }
+    .month-name {
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+    .day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    .day-cell.past {
+      background: linear-gradient(135deg, #ff8c42, #ffa642);
+      color: white;
+      font-weight: 600;
+    }
+    .day-cell.today {
+      background: linear-gradient(135deg, #d4af37, #ffd700);
+      color: white;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+    }
+    .day-cell.future {
+      background: var(--bg-secondary);
+      color: var(--text-tertiary);
+      opacity: 0.4;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">
+          <img src="../assets/logo.png" alt="Time Flow" class="nav-logo-img">
+        </a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          <div class="theme-toggle"><button class="theme-toggle-btn" aria-label="Toggle theme"><span class="theme-icon"></span></button></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container">
+      <div class="viz-header">
+        <h1 class="viz-page-title">🗓️ Calendar Fade</h1>
+        <p class="viz-page-description">Full 2026 calendar. Past days glow bright, future days fade to gray.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <div class="calendar-container">
+            <div class="months-row" id="calendar"></div>
+          </div>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item"><span class="info-value" id="info-percent">0</span><span class="info-label">% Complete</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-used">0</span><span class="info-label">Days Elapsed</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-left">0</span><span class="info-label">Days Left</span></div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="year-progress.html" class="nav-link">📊 Progress</a>
+          <a href="day-grid.html" class="nav-link">🟦 Grid</a>
+          <a href="year-pie.html" class="nav-link">🥧 Pie</a>
+          <a href="clock-dial.html" class="nav-link">🕰️ Clock</a>
+          <a href="month-blocks.html" class="nav-link">🧱 Months</a>
+          <a href="thermometer.html" class="nav-link">🌡️ Temp</a>
+          <a href="ladder.html" class="nav-link">🪜 Ladder</a>
+          <a href="hourglass.html" class="nav-link">⏳ Hourglass</a>
+          <a href="orbit.html" class="nav-link">🌍 Orbit</a>
+          <a href="compass-ring.html" class="nav-link">🧭 Ring</a>
+          <a href="stacked-blocks.html" class="nav-link">📦 Blocks</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      const calendar = document.getElementById('calendar');
+      
+      let dayCounter = 0;
+      for (let m = 0; m < 12; m++) {
+        const monthDiv = document.createElement('div');
+        monthDiv.className = 'month-cal';
+        
+        const monthName = document.createElement('div');
+        monthName.className = 'month-name';
+        monthName.textContent = months[m];
+        
+        const daysGrid = document.createElement('div');
+        daysGrid.className = 'days-grid';
+        
+        for (let d = 1; d <= daysInMonth[m]; d++) {
+          dayCounter++;
+          const dayCell = document.createElement('div');
+          dayCell.className = 'day-cell';
+          dayCell.textContent = d;
+          
+          if (dayCounter < timeFlow.dayOfYear) {
+            dayCell.classList.add('past');
+          } else if (dayCounter === timeFlow.dayOfYear) {
+            dayCell.classList.add('today');
+          } else {
+            dayCell.classList.add('future');
+          }
+          
+          daysGrid.appendChild(dayCell);
+        }
+        
+        monthDiv.appendChild(monthName);
+        monthDiv.appendChild(daysGrid);
+        calendar.appendChild(monthDiv);
+      }
+      
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>

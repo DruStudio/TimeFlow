@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🪜 Week Ladder - Time Flow</title>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">
+          <img src="../assets/logo.png" alt="Time Flow" class="nav-logo-img">
+        </a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+          <button class="btn btn-icon fullscreen-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          <div class="theme-toggle"><button class="theme-toggle-btn"><span class="theme-icon"></span></button></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container-sm">
+      <div class="viz-header">
+        <h1 class="viz-page-title">🪜 Week Ladder</h1>
+        <p class="viz-page-description">Climb 52 steps, one for each week of 2026.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <svg width="600" height="400" viewBox="0 0 600 400" style="display:block;margin:0 auto;">
+            <defs>
+              <linearGradient id="ladderGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#6a4c93"/>
+                <stop offset="50%" style="stop-color:#4ecdc4"/>
+                <stop offset="100%" style="stop-color:#d4af37"/>
+              </linearGradient>
+            </defs>
+            <!-- Path -->
+            <path id="ladder-path" d="M 50 380 L 550 380" fill="none" stroke="var(--border-color)" stroke-width="4" stroke-dasharray="8 8"/>
+            <!-- Progress path -->
+            <path id="progress-path" d="M 50 380" fill="none" stroke="url(#ladderGrad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="1000" stroke-dashoffset="1000" style="transition: stroke-dashoffset 2s ease;"/>
+            <!-- Steps -->
+            <g id="steps"></g>
+            <!-- Climber -->
+            <circle cx="50" cy="380" r="12" fill="#d4af37" id="climber" style="transition: cx 2s ease, cy 2s ease;">
+              <animate attributeName="r" values="12;14;12" dur="1s" repeatCount="indefinite"/>
+            </circle>
+            <text x="300" y="30" text-anchor="middle" font-size="24" font-weight="600" fill="var(--text-primary)">Week <tspan id="week-num">0</tspan> of 52</text>
+          </svg>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item"><span class="info-value" id="info-percent">0</span><span class="info-label">% Complete</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-used">0</span><span class="info-label">Days Elapsed</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-left">0</span><span class="info-label">Days Left</span></div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="year-progress.html" class="nav-link">📊 Progress</a>
+          <a href="day-grid.html" class="nav-link">🟦 Grid</a>
+          <a href="year-pie.html" class="nav-link">🥧 Pie</a>
+          <a href="clock-dial.html" class="nav-link">🕰️ Clock</a>
+          <a href="month-blocks.html" class="nav-link">🧱 Months</a>
+          <a href="thermometer.html" class="nav-link">🌡️ Temp</a>
+          <a href="hourglass.html" class="nav-link">⏳ Hourglass</a>
+          <a href="calendar-fill.html" class="nav-link">🗓️ Calendar</a>
+          <a href="orbit.html" class="nav-link">🌍 Orbit</a>
+          <a href="compass-ring.html" class="nav-link">🧭 Ring</a>
+          <a href="stacked-blocks.html" class="nav-link">📦 Blocks</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const stepsG = document.getElementById('steps');
+      const climber = document.getElementById('climber');
+      const weekNum = document.getElementById('week-num');
+      const progressPath = document.getElementById('progress-path');
+      
+      // Create zigzag path
+      let pathD = 'M 50 380';
+      const stepWidth = 500 / 52;
+      const stepHeight = 20;
+      
+      for (let i = 1; i <= 52; i++) {
+        const x = 50 + (i * stepWidth);
+        const y = 380 - ((i % 2) * stepHeight);
+        pathD += ` L ${x} ${y}`;
+        
+        // Add step marker
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', x);
+        circle.setAttribute('cy', y);
+        circle.setAttribute('r', i <= timeFlow.currentWeek ? '6' : '4');
+        circle.setAttribute('fill', i <= timeFlow.currentWeek ? '#4ecdc4' : 'var(--bg-secondary)');
+        circle.setAttribute('stroke', 'var(--border-color)');
+        circle.setAttribute('stroke-width', '1');
+        stepsG.appendChild(circle);
+      }
+      
+      progressPath.setAttribute('d', pathD);
+      
+      // Calculate climber position
+      const progress = timeFlow.currentWeek / 52;
+      const climberX = 50 + (timeFlow.currentWeek * stepWidth);
+      const climberY = 380 - ((timeFlow.currentWeek % 2) * stepHeight);
+      
+      setTimeout(() => {
+        climber.setAttribute('cx', climberX);
+        climber.setAttribute('cy', climberY);
+        progressPath.style.strokeDashoffset = 1000 - (progress * 1000);
+      }, 100);
+      
+      let start = 0, duration = 2000, startTime = performance.now();
+      function update(t) {
+        const p = Math.min((t - startTime) / duration, 1);
+        weekNum.textContent = Math.round(start + (timeFlow.currentWeek - start) * p);
+        if (p < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+      
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>

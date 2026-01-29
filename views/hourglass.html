@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⏳ Hourglass - Time Flow</title>
+  <link rel="icon" href="../assets/logo.png">
+  <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="../index.html" class="nav-logo">
+          <img src="../assets/logo.png" alt="Time Flow" class="nav-logo-img">
+        </a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>
+          <button class="btn btn-icon fullscreen-btn" aria-label="Fullscreen"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg></button>
+          <div class="theme-toggle"><button class="theme-toggle-btn" aria-label="Toggle theme"><span class="theme-icon"></span></button></div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="viz-page">
+    <div class="container-sm">
+      <div class="viz-header">
+        <h1 class="viz-page-title">⏳ Hourglass Year</h1>
+        <p class="viz-page-description">Time draining from top to bottom as 2026 flows away.</p>
+      </div>
+
+      <div class="viz-container">
+        <div class="viz-display">
+          <svg width="300" height="450" viewBox="0 0 300 450" style="display:block;margin:0 auto;">
+            <defs>
+              <linearGradient id="sandGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#ffd700"/>
+                <stop offset="100%" style="stop-color:#ff8c42"/>
+              </linearGradient>
+            </defs>
+            <!-- Hourglass outline -->
+            <path d="M 80 30 L 220 30 L 150 225 L 220 420 L 80 420 L 150 225 Z" 
+                  fill="none" stroke="var(--border-color)" stroke-width="4"/>
+            <!-- Top sand (remaining time) -->
+            <path id="top-sand" d="M 80 30 L 220 30 L 150 225" 
+                  fill="url(#sandGrad)" opacity="0.7" style="transition: all 2s ease;"/>
+            <!-- Bottom sand (elapsed time) -->
+            <path id="bottom-sand" d="M 150 225 L 80 420 L 220 420" 
+                  fill="url(#sandGrad)" opacity="0.9" style="transition: all 2s ease;"/>
+            <!-- Falling sand particles -->
+            <g id="particles">
+              <circle cx="150" cy="225" r="2" fill="#ffd700" opacity="0">
+                <animate attributeName="cy" from="200" to="250" dur="1.5s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="148" cy="225" r="2" fill="#ffd700" opacity="0">
+                <animate attributeName="cy" from="200" to="250" dur="1.3s" repeatCount="indefinite" begin="0.3s"/>
+                <animate attributeName="opacity" values="0;1;0" dur="1.3s" repeatCount="indefinite" begin="0.3s"/>
+              </circle>
+              <circle cx="152" cy="225" r="2" fill="#ffd700" opacity="0">
+                <animate attributeName="cy" from="200" to="250" dur="1.7s" repeatCount="indefinite" begin="0.6s"/>
+                <animate attributeName="opacity" values="0;1;0" dur="1.7s" repeatCount="indefinite" begin="0.6s"/>
+              </circle>
+            </g>
+            <!-- Labels -->
+            <text x="150" y="150" text-anchor="middle" font-size="20" font-weight="600" fill="var(--text-primary)" id="top-text">0% Left</text>
+            <text x="150" y="350" text-anchor="middle" font-size="20" font-weight="600" fill="var(--text-primary)" id="bottom-text">0% Used</text>
+          </svg>
+        </div>
+
+        <div class="viz-info">
+          <div class="info-item"><span class="info-value" id="info-percent">0</span><span class="info-label">% Complete</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-used">0</span><span class="info-label">Days Elapsed</span></div>
+          <div class="info-item"><span class="info-value" id="info-days-left">0</span><span class="info-label">Days Left</span></div>
+        </div>
+      </div>
+
+      <div class="viz-navigation">
+        <h3 class="text-center mb-3">Explore Other Views</h3>
+        <div class="nav-grid">
+          <a href="year-progress.html" class="nav-link">📊 Progress</a>
+          <a href="day-grid.html" class="nav-link">🟦 Grid</a>
+          <a href="year-pie.html" class="nav-link">🥧 Pie</a>
+          <a href="clock-dial.html" class="nav-link">🕰️ Clock</a>
+          <a href="month-blocks.html" class="nav-link">🧱 Months</a>
+          <a href="thermometer.html" class="nav-link">🌡️ Temp</a>
+          <a href="ladder.html" class="nav-link">🪜 Ladder</a>
+          <a href="calendar-fill.html" class="nav-link">🗓️ Calendar</a>
+          <a href="orbit.html" class="nav-link">🌍 Orbit</a>
+          <a href="compass-ring.html" class="nav-link">🧭 Ring</a>
+          <a href="stacked-blocks.html" class="nav-link">📦 Blocks</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const topSand = document.getElementById('top-sand');
+      const bottomSand = document.getElementById('bottom-sand');
+      const topText = document.getElementById('top-text');
+      const bottomText = document.getElementById('bottom-text');
+      
+      const percentRemaining = 100 - timeFlow.percentComplete;
+      const percentUsed = timeFlow.percentComplete;
+      
+      // Adjust top sand (gets smaller)
+      const topHeight = 195 * (percentRemaining / 100);
+      const topY = 30 + (195 - topHeight);
+      topSand.setAttribute('d', `M 80 ${topY} L 220 ${topY} L 150 225`);
+      
+      // Adjust bottom sand (gets larger)
+      const bottomHeight = 195 * (percentUsed / 100);
+      const bottomY = 420 - bottomHeight;
+      bottomSand.setAttribute('d', `M 150 225 L 80 420 L 220 420 L 150 ${bottomY}`);
+      
+      setTimeout(() => {
+        topText.textContent = percentRemaining.toFixed(1) + '% Left';
+        bottomText.textContent = percentUsed.toFixed(1) + '% Used';
+      }, 1000);
+      
+      animateNumber(document.getElementById('info-percent'), 0, timeFlow.percentComplete, 1500);
+      animateNumber(document.getElementById('info-days-used'), 0, timeFlow.dayOfYear, 1500);
+      animateNumber(document.getElementById('info-days-left'), 0, timeFlow.daysRemaining, 1500);
+    });
+  </script>
+</body>
+</html>
