@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Flow - Debug Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 2rem;
+      background: #1a1a1a;
+      color: #00ff00;
+    }
+    .test-item {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: #2a2a2a;
+      border-left: 4px solid #00ff00;
+    }
+    .error {
+      border-left-color: #ff0000;
+      color: #ff0000;
+    }
+    .success {
+      border-left-color: #00ff00;
+    }
+  </style>
+</head>
+<body>
+  <h1>Time Flow Debug Test</h1>
+  <div id="results"></div>
+
+  <script>
+    const results = document.getElementById('results');
+
+    function addResult(message, isError = false) {
+      const div = document.createElement('div');
+      div.className = `test-item ${isError ? 'error' : 'success'}`;
+      div.textContent = message;
+      results.appendChild(div);
+    }
+
+    // Test 1: Current Date
+    const now = new Date();
+    addResult(`Current Date: ${now.toString()}`);
+
+    // Test 2: Year
+    const year = now.getFullYear();
+    addResult(`Current Year: ${year}`);
+
+    // Test 3: Day of Year
+    const startOfYear = new Date(year, 0, 1);
+    const diffTime = now - startOfYear;
+    const dayOfYear = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    addResult(`Day of Year: ${dayOfYear}`);
+
+    // Test 4: Total Days
+    const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+    const totalDays = isLeap ? 366 : 365;
+    addResult(`Total Days in ${year}: ${totalDays} (${isLeap ? 'Leap Year' : 'Regular Year'})`);
+
+    // Test 5: Days Remaining
+    const daysRemaining = totalDays - dayOfYear;
+    addResult(`Days Remaining: ${daysRemaining}`);
+
+    // Test 6: Percent Complete
+    const percentComplete = (dayOfYear / totalDays) * 100;
+    addResult(`Percent Complete: ${percentComplete.toFixed(2)}%`);
+
+    // Test 7: TimeFlow Class
+    try {
+      class TimeFlow {
+        constructor() {
+          this.currentDate = new Date();
+          this.year = this.currentDate.getFullYear();
+          this.calculate();
+        }
+
+        calculate() {
+          const startOfYear = new Date(this.year, 0, 1);
+          const diffTime = this.currentDate - startOfYear;
+          this.dayOfYear = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+          this.totalDays = this.isLeapYear(this.year) ? 366 : 365;
+          this.daysRemaining = this.totalDays - this.dayOfYear;
+          this.percentComplete = (this.dayOfYear / this.totalDays) * 100;
+          this.totalWeeks = 52;
+          this.currentWeek = Math.ceil(this.dayOfYear / 7);
+          this.currentMonth = this.currentDate.getMonth() + 1;
+          this.currentDay = this.currentDate.getDate();
+          return this;
+        }
+
+        isLeapYear(year) {
+          return (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+        }
+      }
+
+      const tf = new TimeFlow();
+      addResult(`TimeFlow Class: ✓ Initialized`);
+      addResult(`TF Day of Year: ${tf.dayOfYear}`);
+      addResult(`TF Days Remaining: ${tf.daysRemaining}`);
+      addResult(`TF Percent Complete: ${tf.percentComplete.toFixed(2)}%`);
+      addResult(`TF Current Week: ${tf.currentWeek}`);
+      addResult(`TF Current Month: ${tf.currentMonth}`);
+
+      // Test accessing from window
+      window.testTimeFlow = tf;
+      addResult(`TimeFlow accessible: ${window.testTimeFlow ? '✓' : '✗'}`, !window.testTimeFlow);
+
+    } catch (e) {
+      addResult(`TimeFlow Error: ${e.message}`, true);
+    }
+
+    addResult(`\n=== All Tests Complete ===`);
+  </script>
+</body>
+</html>

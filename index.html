@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Time Flow - A beautiful, minimalist visualization of how much of the current year has passed. Watch time flow in calm, elegant ways.">
+  <meta name="keywords" content="time visualization, year progress, productivity, mindfulness, time tracking">
+  <meta name="author" content="Time Flow">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Time Flow - Watch Your Year Pass">
+  <meta property="og:description" content="A calm, visual way to see how much of this year has already flowed by.">
+  <meta property="og:type" content="website">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⏳</text></svg>">
+  
+  <title>Time Flow - Watch Your Year Pass</title>
+  
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container">
+      <div class="nav-content">
+        <a href="index.html" class="nav-logo">
+          <img src="assets/logo.png" alt="Time Flow" style="height: 40px; vertical-align: middle; margin-right: 0.5rem;">
+          Time Flow
+        </a>
+        <div class="nav-controls">
+          <button class="btn btn-icon share-btn" aria-label="Share">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+          </button>
+          <div class="theme-toggle">
+            <button class="theme-toggle-btn" aria-label="Toggle theme">
+              <span class="theme-icon"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <img src="assets/logo.png" alt="Time Flow Logo" style="max-width: 400px; width: 80%; margin-bottom: 2rem; opacity: 0; animation: fadeInUp 1s ease-out forwards;">
+      <h1 class="hero-title">Time Flow</h1>
+      <p class="hero-subtitle">A calm, visual way to see how much of this year has already flowed by.</p>
+      
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-value" id="percent-complete">0</span>
+          <span class="stat-label">% Complete</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="days-used">0</span>
+          <span class="stat-label">Days Used</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="days-remaining">0</span>
+          <span class="stat-label">Days Left</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Visualizations Section -->
+  <section class="visualizations-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Choose Your View</h2>
+        <p class="section-description">
+          Ten different ways to visualize the passage of time. Each one offers a unique perspective on the year's journey.
+        </p>
+      </div>
+
+      <div class="viz-grid">
+        <!-- Progress Bar -->
+        <a href="views/progress-bar.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="280" height="40" viewBox="0 0 280 40">
+              <rect x="0" y="0" width="280" height="40" rx="20" fill="var(--bg-secondary)"/>
+              <rect x="0" y="0" width="140" height="40" rx="20" fill="var(--accent-primary)">
+                <animate attributeName="width" from="0" to="140" dur="1.5s" fill="freeze"/>
+              </rect>
+            </svg>
+          </div>
+          <h3 class="viz-title">Progress Bar</h3>
+          <p class="viz-description">A simple, elegant bar filling as the year progresses. Pure and minimal.</p>
+        </a>
+
+        <!-- Radial Ring -->
+        <a href="views/radial-ring.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="160" height="160" viewBox="0 0 160 160">
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--bg-secondary)" stroke-width="20"/>
+              <circle cx="80" cy="80" r="70" fill="none" stroke="var(--accent-primary)" stroke-width="20" 
+                      stroke-dasharray="440" stroke-dashoffset="220" stroke-linecap="round"
+                      transform="rotate(-90 80 80)">
+                <animate attributeName="stroke-dashoffset" from="440" to="220" dur="1.5s" fill="freeze"/>
+              </circle>
+            </svg>
+          </div>
+          <h3 class="viz-title">Radial Ring</h3>
+          <p class="viz-description">A circular journey around the year. Watch the ring complete its orbit.</p>
+        </a>
+
+        <!-- Year in Weeks -->
+        <a href="views/year-in-weeks.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="260" height="160" viewBox="0 0 260 160">
+              <g id="weeks-grid"></g>
+            </svg>
+          </div>
+          <h3 class="viz-title">Year in Weeks</h3>
+          <p class="viz-description">52 boxes representing each week. See how many weeks remain at a glance.</p>
+        </a>
+
+        <!-- Calendar Fill -->
+        <a href="views/calendar-fill.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="240" height="160" viewBox="0 0 240 160">
+              <g id="calendar-grid"></g>
+            </svg>
+          </div>
+          <h3 class="viz-title">Calendar Fill</h3>
+          <p class="viz-description">Every day of the year laid out. Days fill in as time passes.</p>
+        </a>
+
+        <!-- Hourglass -->
+        <a href="views/hourglass.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="120" height="180" viewBox="0 0 120 180">
+              <path d="M 30 10 L 90 10 L 60 90 L 90 170 L 30 170 L 60 90 Z" 
+                    fill="none" stroke="var(--accent-primary)" stroke-width="3"/>
+              <rect x="30" y="10" width="60" height="80" fill="var(--accent-secondary)" opacity="0.6">
+                <animate attributeName="height" from="80" to="40" dur="2s" fill="freeze"/>
+              </rect>
+            </svg>
+          </div>
+          <h3 class="viz-title">Hourglass</h3>
+          <p class="viz-description">Time drains from the top to the bottom. A classic metaphor.</p>
+        </a>
+
+        <!-- Candle -->
+        <a href="views/candle.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="100" height="180" viewBox="0 0 100 180">
+              <rect x="35" y="40" width="30" height="130" rx="4" fill="var(--accent-primary)"/>
+              <ellipse cx="50" cy="40" rx="15" ry="8" fill="var(--accent-secondary)"/>
+              <path d="M 50 35 Q 45 20 50 15 Q 55 20 50 35" fill="#ff9d5c" opacity="0.8">
+                <animate attributeName="d" 
+                         values="M 50 35 Q 45 20 50 15 Q 55 20 50 35;
+                                 M 50 35 Q 43 18 50 12 Q 57 18 50 35;
+                                 M 50 35 Q 45 20 50 15 Q 55 20 50 35"
+                         dur="1s" repeatCount="indefinite"/>
+              </path>
+            </svg>
+          </div>
+          <h3 class="viz-title">Candle</h3>
+          <p class="viz-description">A candle burning down through the year. Gentle and meditative.</p>
+        </a>
+
+        <!-- Mountain Climb -->
+        <a href="views/mountain-climb.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="260" height="160" viewBox="0 0 260 160">
+              <path d="M 0 160 L 80 60 L 130 90 L 180 40 L 260 100 L 260 160 Z" 
+                    fill="var(--bg-secondary)" stroke="var(--accent-primary)" stroke-width="2"/>
+              <circle cx="130" cy="90" r="6" fill="var(--accent-primary)">
+                <animate attributeName="opacity" values="1;0.4;1" dur="1.5s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+          </div>
+          <h3 class="viz-title">Mountain Climb</h3>
+          <p class="viz-description">Ascending the year's peak. How far up the mountain are you?</p>
+        </a>
+
+        <!-- Battery -->
+        <a href="views/battery.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="200" height="100" viewBox="0 0 200 100">
+              <rect x="10" y="25" width="170" height="50" rx="8" fill="none" stroke="var(--accent-primary)" stroke-width="3"/>
+              <rect x="180" y="40" width="10" height="20" rx="2" fill="var(--accent-primary)"/>
+              <rect x="15" y="30" width="80" height="40" fill="var(--accent-primary)" opacity="0.7">
+                <animate attributeName="width" from="0" to="80" dur="1.5s" fill="freeze"/>
+              </rect>
+            </svg>
+          </div>
+          <h3 class="viz-title">Battery</h3>
+          <p class="viz-description">The year's energy draining. How much charge remains?</p>
+        </a>
+
+        <!-- Timeline -->
+        <a href="views/timeline.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="280" height="60" viewBox="0 0 280 60">
+              <line x1="20" y1="30" x2="260" y2="30" stroke="var(--border-color)" stroke-width="2"/>
+              <line x1="20" y1="30" x2="140" y2="30" stroke="var(--accent-primary)" stroke-width="4">
+                <animate attributeName="x2" from="20" to="140" dur="1.5s" fill="freeze"/>
+              </line>
+              <circle cx="20" cy="30" r="8" fill="var(--accent-primary)"/>
+              <circle cx="140" cy="30" r="8" fill="var(--accent-primary)">
+                <animate attributeName="opacity" values="0;1" dur="1.5s" fill="freeze"/>
+              </circle>
+              <circle cx="260" cy="30" r="8" fill="var(--bg-secondary)"/>
+            </svg>
+          </div>
+          <h3 class="viz-title">Timeline</h3>
+          <p class="viz-description">A linear journey with a marker for today. Past, present, future.</p>
+        </a>
+
+        <!-- Life Bar -->
+        <a href="views/life-bar.html" class="viz-card">
+          <div class="viz-preview">
+            <svg width="260" height="50" viewBox="0 0 260 50">
+              <rect x="0" y="0" width="260" height="50" rx="8" fill="var(--bg-secondary)" stroke="var(--border-color)" stroke-width="2"/>
+              <rect x="5" y="5" width="125" height="40" rx="6" fill="var(--accent-primary)">
+                <animate attributeName="width" from="0" to="125" dur="1.5s" fill="freeze"/>
+              </rect>
+              <text x="130" y="32" font-family="monospace" font-size="20" fill="var(--text-primary)" font-weight="bold">
+                HP
+              </text>
+            </svg>
+          </div>
+          <h3 class="viz-title">Life Bar</h3>
+          <p class="viz-description">A game-style health bar. Your year's HP draining in real-time.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-content">
+      <p class="footer-text">Time Flow - A mindful way to visualize your year</p>
+      <p class="footer-text">Made with ⏳ and intention</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+    // Populate preview grids
+    document.addEventListener('DOMContentLoaded', () => {
+      // Year in Weeks preview
+      const weeksGrid = document.getElementById('weeks-grid');
+      if (weeksGrid) {
+        for (let i = 0; i < 52; i++) {
+          const x = (i % 13) * 20;
+          const y = Math.floor(i / 13) * 40;
+          const filled = i < 26;
+          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rect.setAttribute('x', x);
+          rect.setAttribute('y', y);
+          rect.setAttribute('width', '16');
+          rect.setAttribute('height', '36');
+          rect.setAttribute('rx', '3');
+          rect.setAttribute('fill', filled ? 'var(--accent-primary)' : 'var(--bg-secondary)');
+          rect.setAttribute('opacity', filled ? '0.8' : '1');
+          weeksGrid.appendChild(rect);
+        }
+      }
+
+      // Calendar preview
+      const calendarGrid = document.getElementById('calendar-grid');
+      if (calendarGrid) {
+        for (let i = 0; i < 12; i++) {
+          for (let j = 0; j < 5; j++) {
+            const x = i * 20;
+            const y = j * 32;
+            const filled = (i * 5 + j) < 30;
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x + 10);
+            circle.setAttribute('cy', y + 16);
+            circle.setAttribute('r', '6');
+            circle.setAttribute('fill', filled ? 'var(--accent-primary)' : 'var(--bg-secondary)');
+            circle.setAttribute('opacity', filled ? '0.7' : '1');
+            calendarGrid.appendChild(circle);
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
