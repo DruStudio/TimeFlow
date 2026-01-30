@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Flow - Visualize Progress Over Time</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --theme-bg: #0a192f;
+            --theme-text: #64ffda;
+            --widget-bg: #1e293b;
+            --widget-glow: rgba(100, 255, 218, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--theme-bg);
+            color: var(--theme-text);
+            min-height: 100vh;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+
+        .theme-selector {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .theme-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .theme-btn.active {
+            border-color: white;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+        }
+
+        .theme-ocean { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .theme-sunset { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .theme-forest { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+
+        .carousel-section {
+            padding: 2rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 3rem;
+        }
+
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            gap: 2rem;
+            padding: 2rem 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .carousel-item {
+            flex: 0 0 auto;
+            width: 350px;
+            scroll-snap-align: center;
+        }
+
+        .widget {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--widget-bg);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+            animation: widgetPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes widgetPulse {
+            0%, 100% {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 40px var(--widget-glow);
+            }
+            50% {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 60px var(--widget-glow);
+            }
+        }
+
+        .widget-header {
+            z-index: 2;
+        }
+
+        .widget-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .widget-dates {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            color: white;
+        }
+
+        .widget-visualization {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--theme-text), rgba(255, 255, 255, 0.8));
+            border-radius: 20px;
+            transition: width 1s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-blocks {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(10, 1fr);
+            gap: 4px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .block {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .block.filled {
+            background: var(--theme-text);
+            box-shadow: 0 0 10px var(--theme-text);
+        }
+
+        .progress-spiral {
+            width: 200px;
+            height: 200px;
+            position: relative;
+        }
+
+        .spiral-svg {
+            transform: rotate(-90deg);
+        }
+
+        .spiral-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 12;
+        }
+
+        .spiral-progress {
+            fill: none;
+            stroke: var(--theme-text);
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s ease-out;
+            filter: drop-shadow(0 0 8px var(--theme-text));
+        }
+
+        .widget-footer {
+            z-index: 2;
+            text-align: center;
+        }
+
+        .widget-percentage {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .widget-remaining {
+            font-size: 0.9rem;
+            opacity: 0.7;
+            color: white;
+        }
+
+        .carousel-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--theme-text);
+            background: transparent;
+            color: var(--theme-text);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: var(--theme-text);
+            color: var(--theme-bg);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .generator-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .generator-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            opacity: 0.9;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--theme-text);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--theme-text);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .style-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .style-option {
+            padding: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .style-option:hover {
+            border-color: var(--theme-text);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .style-option.active {
+            border-color: var(--theme-text);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: var(--theme-text);
+            color: var(--theme-bg);
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .preview-section {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .preview-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .preview-widget {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .theme-selector {
+                position: static;
+                justify-content: center;
+                margin-top: 1.5rem;
+            }
+
+            .carousel-item {
+                width: 280px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .style-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .carousel-item {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        .carousel-item:nth-child(1) { animation-delay: 0.1s; }
+        .carousel-item:nth-child(2) { animation-delay: 0.2s; }
+        .carousel-item:nth-child(3) { animation-delay: 0.3s; }
+        .carousel-item:nth-child(4) { animation-delay: 0.4s; }
+        .carousel-item:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Time Flow</h1>
+        <p>Visualize progress over time</p>
+        <div class="theme-selector">
+            <button class="theme-btn theme-ocean active" data-theme="ocean"></button>
+            <button class="theme-btn theme-sunset" data-theme="sunset"></button>
+            <button class="theme-btn theme-forest" data-theme="forest"></button>
+        </div>
+    </header>
+
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <div class="carousel" id="heroCarousel"></div>
+        </div>
+    </section>
+
+    <section class="generator-section">
+        <h2 class="generator-title">Create Your Time Flow</h2>
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Name</label>
+                <input type="text" id="widgetName" placeholder="My Custom Timer">
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="startDate">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="endDate">
+            </div>
+            <div class="form-group">
+                <label>Current Date</label>
+                <input type="date" id="currentDate">
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label>Time Units</label>
+            <select id="timeUnits">
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+                <option value="percentage">Percentage</option>
+            </select>
+        </div>
+
+        <div class="style-selector">
+            <div class="style-option active" data-style="bar">
+                <strong>Bar</strong>
+                <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">Horizontal progress</p>
+            </div>
+            <div class="style-option" data-style="blocks">
+                <strong>Blocks</strong>
+                <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">Grid fill</p>
+            </div>
+            <div class="style-option" data-style="spiral">
+                <strong>Spiral</strong>
+                <p style="font-size: 0.85rem; opacity: 0.7; margin-top: 0.5rem;">Circular progress</p>
+            </div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn">Generate Widget</button>
+
+        <div class="preview-section" id="previewSection" style="display: none;">
+            <h3 class="preview-title">Your Time Flow</h3>
+            <div class="preview-widget" id="previewWidget"></div>
+            <div class="carousel-buttons" style="margin-top: 2rem;">
+                <button class="btn" onclick="copyLink()">Copy Link</button>
+                <button class="btn" onclick="saveImage()">Save Image</button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const themes = {
+            ocean: {
+                bg: '#0a192f',
+                text: '#64ffda',
+                glow: 'rgba(100, 255, 218, 0.3)'
+            },
+            sunset: {
+                bg: '#1a0a1f',
+                text: '#ff6b9d',
+                glow: 'rgba(255, 107, 157, 0.3)'
+            },
+            forest: {
+                bg: '#0f1e1a',
+                text: '#4fffce',
+                glow: 'rgba(79, 255, 206, 0.3)'
+            }
+        };
+
+        const heroWidgets = [
+            {
+                name: '2026',
+                start: '2026-01-01',
+                end: '2026-12-31',
+                style: 'bar'
+            },
+            {
+                name: 'Trump Presidency',
+                start: '2025-01-20',
+                end: '2029-01-20',
+                style: 'blocks'
+            },
+            {
+                name: 'Pregnancy Progress',
+                start: '2025-06-01',
+                end: '2026-03-01',
+                style: 'spiral'
+            },
+            {
+                name: 'Year Progress',
+                start: '2026-01-01',
+                end: '2026-12-31',
+                style: 'bar'
+            },
+            {
+                name: 'Custom Countdown',
+                start: '2026-01-01',
+                end: '2026-06-30',
+                style: 'blocks'
+            }
+        ];
+
+        function calculateProgress(start, end, current) {
+            const startDate = new Date(start);
+            const endDate = new Date(end);
+            const currentDate = new Date(current);
+
+            const total = endDate - startDate;
+            const elapsed = currentDate - startDate;
+            const percentage = Math.max(0, Math.min(100, (elapsed / total) * 100));
+
+            const remaining = endDate - currentDate;
+            const daysRemaining = Math.ceil(remaining / (1000 * 60 * 60 * 24));
+
+            return {
+                percentage: percentage.toFixed(1),
+                daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
+                total: Math.ceil(total / (1000 * 60 * 60 * 24))
+            };
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function createWidget(data, current = new Date().toISOString().split('T')[0]) {
+            const progress = calculateProgress(data.start, data.end, current);
+            
+            const widget = document.createElement('div');
+            widget.className = 'widget';
+            
+            const visualization = createVisualization(data.style, progress.percentage);
+            
+            widget.innerHTML = `
+                <div class="widget-header">
+                    <div class="widget-title">${data.name}</div>
+                    <div class="widget-dates">${formatDate(data.start)} → ${formatDate(data.end)}</div>
+                </div>
+                <div class="widget-visualization">
+                    ${visualization}
+                </div>
+                <div class="widget-footer">
+                    <div class="widget-percentage">${progress.percentage}%</div>
+                    <div class="widget-remaining">${progress.daysRemaining} days remaining</div>
+                </div>
+            `;
+            
+            return widget;
+        }
+
+        function createVisualization(style, percentage) {
+            if (style === 'bar') {
+                return `
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+            } else if (style === 'blocks') {
+                const totalBlocks = 100;
+                const filledBlocks = Math.round(percentage);
+                let blocksHTML = '';
+                for (let i = 0; i < totalBlocks; i++) {
+                    blocksHTML += `<div class="block ${i < filledBlocks ? 'filled' : ''}"></div>`;
+                }
+                return `<div class="progress-blocks">${blocksHTML}</div>`;
+            } else if (style === 'spiral') {
+                const radius = 90;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (percentage / 100) * circumference;
+                return `
+                    <div class="progress-spiral">
+                        <svg class="spiral-svg" width="200" height="200">
+                            <circle class="spiral-bg" cx="100" cy="100" r="${radius}"></circle>
+                            <circle class="spiral-progress" cx="100" cy="100" r="${radius}"
+                                style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};"></circle>
+                        </svg>
+                    </div>
+                `;
+            }
+        }
+
+        function renderHeroCarousel() {
+            const carousel = document.getElementById('heroCarousel');
+            carousel.innerHTML = '';
+            
+            heroWidgets.forEach((widgetData, index) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                
+                const widget = createWidget(widgetData);
+                item.appendChild(widget);
+                
+                const buttons = document.createElement('div');
+                buttons.className = 'carousel-buttons';
+                buttons.innerHTML = `
+                    <button class="btn" onclick="copyLink(${index})">Copy Link</button>
+                    <button class="btn" onclick="saveImage(${index})">Save Image</button>
+                `;
+                item.appendChild(buttons);
+                
+                carousel.appendChild(item);
+            });
+        }
+
+        function setTheme(themeName) {
+            const theme = themes[themeName];
+            document.documentElement.style.setProperty('--theme-bg', theme.bg);
+            document.documentElement.style.setProperty('--theme-text', theme.text);
+            document.documentElement.style.setProperty('--widget-glow', theme.glow);
+            
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.theme === themeName);
+            });
+        }
+
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTheme(btn.dataset.theme);
+            });
+        });
+
+        document.querySelectorAll('.style-option').forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.style-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+            });
+        });
+
+        document.getElementById('currentDate').valueAsDate = new Date();
+
+        document.getElementById('generateBtn').addEventListener('click', () => {
+            const name = document.getElementById('widgetName').value || 'Custom Timer';
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const current = document.getElementById('currentDate').value;
+            const style = document.querySelector('.style-option.active').dataset.style;
+
+            if (!start || !end) {
+                alert('Please select start and end dates');
+                return;
+            }
+
+            const widgetData = { name, start, end, style };
+            const widget = createWidget(widgetData, current);
+            
+            const previewWidget = document.getElementById('previewWidget');
+            previewWidget.innerHTML = '';
+            previewWidget.appendChild(widget);
+            
+            document.getElementById('previewSection').style.display = 'block';
+            
+            setTimeout(() => {
+                previewWidget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        });
+
+        function copyLink(index) {
+            const url = window.location.href;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard!');
+            }).catch(() => {
+                alert('Unable to copy link. Please copy manually: ' + url);
+            });
+        }
+
+        function saveImage(index) {
+            alert('Image save functionality - Widget image would be exported as PNG');
+        }
+
+        renderHeroCarousel();
+
+        let carouselStartX = 0;
+        let carouselScrollLeft = 0;
+        const carousel = document.getElementById('heroCarousel');
+
+        carousel.addEventListener('mousedown', (e) => {
+            carouselStartX = e.pageX - carousel.offsetLeft;
+            carouselScrollLeft = carousel.scrollLeft;
+            carousel.style.cursor = 'grabbing';
+        });
+
+        carousel.addEventListener('mouseleave', () => {
+            carousel.style.cursor = 'grab';
+        });
+
+        carousel.addEventListener('mouseup', () => {
+            carousel.style.cursor = 'grab';
+        });
+
+        carousel.addEventListener('mousemove', (e) => {
+            if (e.buttons !== 1) return;
+            e.preventDefault();
+            const x = e.pageX - carousel.offsetLeft;
+            const walk = (x - carouselStartX) * 2;
+            carousel.scrollLeft = carouselScrollLeft - walk;
+        });
+
+        setInterval(() => {
+            const widgets = document.querySelectorAll('.widget');
+            widgets.forEach((widget, index) => {
+                if (index < heroWidgets.length) {
+                    const newWidget = createWidget(heroWidgets[index]);
+                    const parent = widget.parentElement;
+                    const buttons = parent.querySelector('.carousel-buttons');
+                    parent.replaceChild(newWidget, widget);
+                    if (buttons) parent.appendChild(buttons);
+                }
+            });
+        }, 60000);
+    </script>
+</body>
+</html>
